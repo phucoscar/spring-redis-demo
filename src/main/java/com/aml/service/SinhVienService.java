@@ -49,8 +49,11 @@ public class SinhVienService {
         List<SinhVien> sinhViens = null;
         if (StringUtils.hasLength(json))
             sinhViens = JsonUtil.parseArray(json, SinhVien.class);
-        if (sinhViens == null || sinhViens.size() == 0)
+        if (sinhViens == null || sinhViens.size() == 0) {
             sinhViens = sinhVienRepo.findAll();
+            json = JsonUtil.toJsonString(sinhViens);
+            redisTemplate.opsForValue().set("sinhViens", json, 30, TimeUnit.SECONDS);
+        }
 
         return Result.success("Success", sinhViens);
     }
